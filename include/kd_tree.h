@@ -18,6 +18,7 @@ class KDTree {
 
 public:
     KDTree(const vector<Track>& tracks);
-    vector<pair<Track, int>> k_nearest_neighbors(const Track& query, int k) const;
-    int size();
+    ~KDTree();
+    vector<pair<Track, double>> k_nearest_neighbors(const Track& query, int k) const;
+    int size() const;
 };
