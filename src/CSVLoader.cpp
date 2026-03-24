@@ -73,20 +73,20 @@ vector<string> CSVLoader::parseCSVLine(const string& line) {
     return fields;
 }
 
-static int toIntSafe(const string& s) {
-    string t = CSVLoader::trim(s);
+int CSVLoader::toIntSafe(const string& s) {
+    string t = trim(s);
     if (t.empty()) return 0;
     return stoi(t);
 }
 
-static double toDoubleSafe(const string& s) {
-    string t = CSVLoader::trim(s);
+double CSVLoader::toDoubleSafe(const string& s) {
+    string t = trim(s);
     if (t.empty()) return 0.0;
     return stod(t);
 }
 
-static bool toBoolSafe(const string& s) {
-    string t = CSVLoader::trim(s);
+bool CSVLoader::toBoolSafe(const string& s) {
+    string t = trim(s);
     transform(t.begin(), t.end(), t.begin(),
               [](unsigned char c) { return static_cast<char>(tolower(c)); });
     return t == "true" || t == "1";

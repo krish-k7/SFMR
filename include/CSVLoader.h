@@ -19,6 +19,9 @@ private:
     static vector<string> parseCSVLine(const string& line);
     static string trim(const string& s);
     static string unquote(const string& s);
+    static int toIntSafe(const string& s);
+    static double toDoubleSafe(const string& s);
+    static bool toBoolSafe(const string& s);
 };
 
 #endif //CSVLOADER_H
