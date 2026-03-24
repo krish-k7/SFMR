@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <queue>
 #include <utility>
 #include "Track.h"
 
@@ -19,10 +21,12 @@ class KDTree {
     Node* root;
 
     Node* build_recursive(vector<Track>& tracks, int depth, int lower_idx, int upper_idx);
+    void delete_recursive(Node* node);
+    void search_recursive(Node* node, const Track& query, int k, priority_queue<pair<double, Node*>>& best) const;
 
 public:
     KDTree(const vector<Track>& tracks);
     ~KDTree();
-    vector<pair<Track, double>> k_nearest_neighbors(const Track& query, int k) const;
+    vector<pair<double, Track>> k_nearest_neighbors(const Track& query, int k) const;
     int size() const;
 };
