@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include "track.h"
+#include "Track.h"
 
 using namespace std;
 
@@ -10,11 +10,15 @@ class KDTree {
         int axis;
         Node* left;
         Node* right;
+
+        Node(const Track& track, int axis) : track(track), axis(axis), left(nullptr), right(nullptr) {}
     };
 
     int n_dims;
     int n_nodes;
     Node* root;
+
+    Node* build_recursive(vector<Track>& tracks, int depth, int lower_idx, int upper_idx);
 
 public:
     KDTree(const vector<Track>& tracks);
