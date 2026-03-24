@@ -17,7 +17,7 @@ KDTree::Node* KDTree::build_recursive(vector<Track>& tracks, int depth, int lowe
         int dim;
         
         bool operator()(const Track& a, const Track& b) const {
-            return a.features[dim] < b.features[dim];
+            return a.audio_features[dim] < b.audio_features[dim];
         }
     } sort_comparator{axis};
 

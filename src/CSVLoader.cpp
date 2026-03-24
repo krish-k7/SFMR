@@ -138,15 +138,25 @@ vector<Track> CSVLoader::loadTracks(const string& filePath) {
         t.duration_ms = toIntSafe(getField(row, "duration_ms"));
         t.explicit_flag = toBoolSafe(getField(row, "explicit"));
 
-        t.danceability = toDoubleSafe(getField(row, "danceability"));
-        t.energy = toDoubleSafe(getField(row, "energy"));
-        t.loudness = toDoubleSafe(getField(row, "loudness"));
-        t.speechiness = toDoubleSafe(getField(row, "speechiness"));
-        t.acousticness = toDoubleSafe(getField(row, "acousticness"));
-        t.instrumentalness = toDoubleSafe(getField(row, "instrumentalness"));
-        t.liveness = toDoubleSafe(getField(row, "liveness"));
-        t.valence = toDoubleSafe(getField(row, "valence"));
-        t.tempo = toDoubleSafe(getField(row, "tempo"));
+        // t.danceability = toDoubleSafe(getField(row, "danceability"));
+        // t.energy = toDoubleSafe(getField(row, "energy"));
+        // t.loudness = toDoubleSafe(getField(row, "loudness"));
+        // t.speechiness = toDoubleSafe(getField(row, "speechiness"));
+        // t.acousticness = toDoubleSafe(getField(row, "acousticness"));
+        // t.instrumentalness = toDoubleSafe(getField(row, "instrumentalness"));
+        // t.liveness = toDoubleSafe(getField(row, "liveness"));
+        // t.valence = toDoubleSafe(getField(row, "valence"));
+        // t.tempo = toDoubleSafe(getField(row, "tempo"));
+
+        t.audio_features.push_back(toDoubleSafe(getField(row, "danceability")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "energy")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "loudness")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "speechiness")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "acousticness")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "instrumentalness")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "liveness")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "valence")));
+        t.audio_features.push_back(toDoubleSafe(getField(row, "tempo")));
 
         if (!t.track_name.empty()) {
             tracks.push_back(t);
