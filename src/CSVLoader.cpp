@@ -92,7 +92,7 @@ bool CSVLoader::toBoolSafe(const string& s) {
     return t == "true" || t == "1";
 }
 
-vector<Track> CSVLoader::loadTracks(const string& filePath) {
+void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
     ifstream file(filePath);
     if (!file.is_open()) {
         throw runtime_error("Could not open CSV file: " + filePath);
@@ -116,9 +116,8 @@ vector<Track> CSVLoader::loadTracks(const string& filePath) {
         return unquote(row[it->second]);
     };
 
-    vector<Track> tracks;
     string line;
-    int idx = 0;
+    // int idx = 0;
 
     while (getline(file, line)) {
         if (line.empty()) continue;
@@ -126,7 +125,7 @@ vector<Track> CSVLoader::loadTracks(const string& filePath) {
         vector<string> row = parseCSVLine(line);
 
         Track t;
-        t.index = idx++;
+        // t.index = idx++;
 
         t.track_id = getField(row, "track_id");
         t.track_name = getField(row, "track_name");
@@ -159,13 +158,11 @@ vector<Track> CSVLoader::loadTracks(const string& filePath) {
         t.audio_features.push_back(toDoubleSafe(getField(row, "tempo")));
 
         if (!t.track_name.empty()) {
-            tracks.push_back(t);
+            destination.push_back(t);
         }
     }
 
-    for (int i = 0; i < static_cast<int>(tracks.size()); ++i) {
-        tracks[i].index = i;
-    }
-
-    return tracks;
+    // for (int i = 0; i < static_cast<int>(destination.size()); ++i) {
+    //     destination[i].index = i;
+    // }
 }

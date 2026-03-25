@@ -11,7 +11,7 @@
 using namespace std;
 
 struct Track {
-    int index = -1;
+    // int index = -1;
 
     string track_id;
     string track_name;

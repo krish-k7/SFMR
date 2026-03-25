@@ -13,7 +13,7 @@ using namespace std;
 
 class CSVLoader {
 public:
-    static vector<Track> loadTracks(const string& filePath);
+    static void loadTracks(const string& filePath, vector<Track>& destination);
 
 private:
     static vector<string> parseCSVLine(const string& line);
