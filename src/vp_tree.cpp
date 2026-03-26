@@ -59,6 +59,48 @@ void VPTree::delete_recursive(Node* node) {
     delete node;
 }
 
+void VPTree::search_recursive(Node* node, const Track& query, int k, priority_queue<pair<double, Node*>>& best) const {
+    if (node == nullptr) return;
+
+    double dist = compute_distance(query.audio_features, node->track.audio_features);
+
+    if (query.track_id != node->track.track_id) {
+        if (best.size() < k) {
+            best.push({dist, node});
+        } else if (dist < best.top().first) {
+            best.pop();
+            best.push({dist, node});
+        }
+    }
+
+    Node* primary = nullptr;
+    Node* secondary = nullptr;
+    bool took_left = false;
+
+    if (dist <= node->radius) {
+        primary = node->left;
+        secondary = node->right;
+        took_left = true;
+    } else {
+        primary = node->right;
+        secondary = node->left;
+    }
+
+    search_recursive(primary, query, k, best);
+
+    bool take_secondary = false;
+
+    if (best.size() < k) {
+        take_secondary = true;
+    } else if (took_left) {
+        if (dist + best.top().first >= node->radius) take_secondary = true;
+    } else {
+        if (dist - best.top().first <= node->radius) take_secondary = true;
+    }
+
+    if (take_secondary) search_recursive(secondary, query, k, best);
+}
+
 VPTree::VPTree(const vector<Track>& tracks) {
     this->n_nodes = 0;
 
@@ -70,6 +112,20 @@ VPTree::VPTree(const vector<Track>& tracks) {
 
 VPTree::~VPTree() {
     delete_recursive(this->root);
+}
+
+vector<pair<double, Track>> VPTree::k_nearest_neighbors(const Track& query, int k) const {
+    priority_queue<pair<double, Node*>> best;
+    search_recursive(this->root, query, k, best);
+
+    vector<pair<double, Track>> results;
+    while (!best.empty()) {
+        const auto r = best.top();
+        results.push_back({r.first, r.second->track});
+        best.pop();
+    }
+
+    return results;
 }
 
 int VPTree::size() const {
