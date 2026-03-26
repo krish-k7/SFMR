@@ -2,23 +2,11 @@
 #include <queue>
 #include <utility>
 #include <algorithm>
-#include <cmath>
 #include "Track.h"
 #include "kd_tree.h"
+#include "distance.h"
 
 using namespace std;
-
-double compute_distance(const vector<double>& v1, const vector<double>& v2) {
-    if (v1.size() != v2.size()) return -1;
-
-    double sum = 0;
-    for (size_t i = 0; i < v1.size(); i++) {
-        double dim_i_diff = v2[i] - v1[i];
-        sum += dim_i_diff * dim_i_diff;
-    }
-
-    return sqrt(sum);
-}
 
 KDTree::Node* KDTree::build_recursive(vector<Track>& tracks, int depth, int lower_idx, int upper_idx) {
     if (upper_idx < lower_idx) return nullptr;
