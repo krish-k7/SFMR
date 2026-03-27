@@ -4,7 +4,7 @@
 
 using namespace std;
 
-double compute_distance(const vector<double>& v1, const vector<double>& v2) {
+inline double compute_distance(const vector<double>& v1, const vector<double>& v2) {
     if (v1.size() != v2.size()) return -1;
 
     double sum = 0;
