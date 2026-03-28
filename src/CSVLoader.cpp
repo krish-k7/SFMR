@@ -129,9 +129,9 @@ void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
 
         t.track_id = getField(row, "track_id");
         t.track_name = getField(row, "track_name");
-        t.artists = getField(row, "artists");
+        t.artists = getField(row, "artist_name");
         t.album_name = getField(row, "album_name");
-        t.track_genre = getField(row, "track_genre");
+        t.track_genre = getField(row, "genre");
 
         t.popularity = toIntSafe(getField(row, "popularity"));
         t.duration_ms = toIntSafe(getField(row, "duration_ms"));
