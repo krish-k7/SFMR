@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// Helper function to remove whitespace from CSV data
 string CSVLoader::trim(const string& s) {
     size_t start = 0;
     while (start < s.size() && isspace(static_cast<unsigned char>(s[start]))) {
@@ -26,6 +27,7 @@ string CSVLoader::trim(const string& s) {
     return s.substr(start, end - start);
 }
 
+// Helper function to remove quotation marks from CSV data
 string CSVLoader::unquote(const string& s) {
     string out = trim(s);
 
@@ -46,6 +48,7 @@ string CSVLoader::unquote(const string& s) {
     return result;
 }
 
+// Parse a line from a CSV file and return fields as vector
 vector<string> CSVLoader::parseCSVLine(const string& line) {
     vector<string> fields;
     string current;
@@ -73,6 +76,7 @@ vector<string> CSVLoader::parseCSVLine(const string& line) {
     return fields;
 }
 
+// Helper functions to safely convert strings from CSV data to the correct data type
 int CSVLoader::toIntSafe(const string& s) {
     string t = trim(s);
     if (t.empty()) return 0;
@@ -92,6 +96,7 @@ bool CSVLoader::toBoolSafe(const string& s) {
     return t == "true" || t == "1";
 }
 
+// Create vector of Track objects from CSV data
 void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
     ifstream file(filePath);
     if (!file.is_open()) {
@@ -117,7 +122,6 @@ void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
     };
 
     string line;
-    // int idx = 0;
 
     while (getline(file, line)) {
         if (line.empty()) continue;
@@ -125,7 +129,6 @@ void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
         vector<string> row = parseCSVLine(line);
 
         Track t;
-        // t.index = idx++;
 
         t.track_id = getField(row, "track_id");
         t.track_name = getField(row, "track_name");
@@ -149,8 +152,4 @@ void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
             destination.push_back(t);
         }
     }
-
-    // for (int i = 0; i < static_cast<int>(destination.size()); ++i) {
-    //     destination[i].index = i;
-    // }
 }

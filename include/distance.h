@@ -4,6 +4,8 @@
 
 using namespace std;
 
+
+// Helper function to compute the Euclidean distance between two feature vectors
 inline double compute_distance(const vector<double>& v1, const vector<double>& v2) {
     if (v1.size() != v2.size()) return -1;
 

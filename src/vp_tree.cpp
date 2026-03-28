@@ -8,11 +8,11 @@
 
 using namespace std;
 
+// Helper function called by construtor to build a VP Tree from a vector of tracks
 VPTree::Node* VPTree::build_recursive(vector<Track>& tracks, int lower_idx, int upper_idx) {
     if (upper_idx < lower_idx) return nullptr;
     
-    // always use last element as vantage point
-    // -> tree build is deterministic (vs random selection)
+    // Always use last element as vantage point -> tree build is deterministic (vs random selection)
     Track vp = tracks[upper_idx];
     upper_idx--;
 
@@ -35,21 +35,25 @@ VPTree::Node* VPTree::build_recursive(vector<Track>& tracks, int lower_idx, int 
         }
     } sort_comparator{&vp};
 
+    // Sort the remaining tracks by distance from the vantage point
     sort(lower_it, upper_it, sort_comparator);
 
     int med_idx = lower_idx + (upper_idx - lower_idx) / 2;
     auto med_it = tracks.begin() + med_idx;
 
+    // The median distance becomes the radius that splits the inner and outer subtrees
     double radius = compute_distance((*med_it).audio_features, vp.audio_features);
     Node* node = new Node(vp, radius);
     n_nodes++;
 
+    // Left subtree stores tracks with distance <= radius, right subtree stores tracks with distance > radius
     node->left = build_recursive(tracks, lower_idx, med_idx);
     node->right = build_recursive(tracks, med_idx + 1, upper_idx);
 
     return node;
 }
 
+// Helper function called by destructor to delete all nodes in the VP Tree
 void VPTree::delete_recursive(Node* node) {
     if (node == nullptr) return;
 
@@ -59,11 +63,13 @@ void VPTree::delete_recursive(Node* node) {
     delete node;
 }
 
+// Helper function called by k_nearest_neighbors to recursively search the VP Tree
 void VPTree::search_recursive(Node* node, const Track& query, int k, priority_queue<pair<double, Node*>>& best) const {
     if (node == nullptr) return;
 
     double dist = compute_distance(query.audio_features, node->track.audio_features);
 
+    // Skip the query track itself, but otherwise keep the current k closest tracks in a max heap
     if (query.track_id != node->track.track_id) {
         if (best.size() < k) {
             best.push({dist, node});
@@ -77,6 +83,8 @@ void VPTree::search_recursive(Node* node, const Track& query, int k, priority_qu
     Node* secondary = nullptr;
     bool took_left = false;
 
+    // Search the subtree containing the query first:
+    // left = inside the node radius, right = outside the node radius
     if (dist <= node->radius) {
         primary = node->left;
         secondary = node->right;
@@ -90,17 +98,23 @@ void VPTree::search_recursive(Node* node, const Track& query, int k, priority_qu
 
     bool take_secondary = false;
 
+    // If fewer than k neighbors have been found, the other subtree must still be checked
     if (best.size() < k) {
         take_secondary = true;
     } else if (took_left) {
+        // When the query is inside the radius, the outer subtree only matters if the current search ball
+        // reaches the radius boundary
         if (dist + best.top().first >= node->radius) take_secondary = true;
     } else {
+        // When the query is outside the radius, the inner subtree only matters if the current search ball
+        // crosses back over the radius boundary
         if (dist - best.top().first <= node->radius) take_secondary = true;
     }
 
     if (take_secondary) search_recursive(secondary, query, k, best);
 }
 
+// Constructor builds the full VP Tree from a copy of the track vector
 VPTree::VPTree(const vector<Track>& tracks) {
     this->n_nodes = 0;
 
@@ -110,15 +124,18 @@ VPTree::VPTree(const vector<Track>& tracks) {
     this->root = build_recursive(tracks_v, 0, tracks_v.size() - 1);
 }
 
+// Destructor deletes every node in the VP Tree
 VPTree::~VPTree() {
     delete_recursive(this->root);
 }
 
+// Public function to return the k nearest neighbors of a query track
 vector<pair<double, Track>> VPTree::k_nearest_neighbors(const Track& query, int k) const {
     priority_queue<pair<double, Node*>> best;
     search_recursive(this->root, query, k, best);
 
     vector<pair<double, Track>> results;
+    // The max heap stores the farthest of the current best matches on top, so pop until empty
     while (!best.empty()) {
         const auto r = best.top();
         results.push_back({r.first, r.second->track});
@@ -128,6 +145,7 @@ vector<pair<double, Track>> VPTree::k_nearest_neighbors(const Track& query, int 
     return results;
 }
 
+// Returns the total number of nodes currently stored in the VP Tree
 int VPTree::size() const {
     return this->n_nodes;
 }
