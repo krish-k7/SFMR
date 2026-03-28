@@ -76,7 +76,7 @@ int main() {
 
     cout << "Loaded " << tracks.size() << " tracks.\n";
 
-    cout << "\nChoose algorithm:\n";
+    cout << "\nChoose data structure:\n";
     cout << "1. KD Tree\n";
     cout << "2. VP Tree\n";
     cout << "Choice: ";
