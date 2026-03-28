@@ -1,0 +1,122 @@
+#include <algorithm>
+#include <cctype>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "CSVLoader.h"
+#include "Track.h"
+#include "kd_tree.h"
+#include "vp_tree.h"
+
+using namespace std;
+
+string toLower(string s) {
+    for (char& c : s) {
+        c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+    }
+    return s;
+}
+
+Track* findTrackByName(vector<Track>& tracks, const string& name) {
+    string target = toLower(name);
+
+    for (auto& track : tracks) {
+        if (toLower(track.track_name) == target) {
+            return &track;
+        }
+    }
+
+    return nullptr;
+}
+
+void printResults(const vector<pair<double, Track>>& results) {
+    if (results.empty()) {
+        cout << "No similar songs found.\n";
+        return;
+    }
+
+    //print in reverse to show nearest first
+    for (int i = static_cast<int>(results.size()) - 1, rank = 1; i >= 0; --i, ++rank) {
+        cout << rank << ". " << results[i].second.track_name
+             << " - " << results[i].second.artists
+             << " (distance: " << results[i].first << ")\n";
+    }
+}
+
+int main() {
+    vector<Track> tracks;
+    string csvPath;
+
+    cout << "SFMR Song Recommender\n";
+    cout << "Enter CSV file path: ";
+    getline(cin, csvPath);
+
+    try {
+        CSVLoader::loadTracks(csvPath, tracks);
+    } catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+        return 1;
+    }
+
+    if (tracks.empty()) {
+        cout << "No tracks loaded.\n";
+        return 1;
+    }
+
+    cout << "Loaded " << tracks.size() << " tracks.\n";
+
+    cout << "\nChoose algorithm:\n";
+    cout << "1. KD Tree\n";
+    cout << "2. VP Tree\n";
+    cout << "Choice: ";
+
+    string choice;
+    getline(cin, choice);
+
+    cout << "How many similar songs do you want? ";
+    string kInput;
+    getline(cin, kInput);
+    int k = stoi(kInput);
+
+    KDTree kdTree(tracks);
+    VPTree vpTree(tracks);
+
+    while (true) {
+        string songTitle;
+        cout << "\nEnter song title (or q to quit): ";
+        getline(cin, songTitle);
+
+        if (songTitle == "q" || songTitle == "Q") {
+            break;
+        }
+
+        if (songTitle.empty()) {
+            cout << "Please enter a song title.\n";
+            continue;
+        }
+
+        Track* queryTrack = findTrackByName(tracks, songTitle);
+
+        if (queryTrack == nullptr) {
+            cout << "Song not found.\n";
+            continue;
+        }
+
+        vector<pair<double, Track>> results;
+
+        if (choice == "1") {
+            results = kdTree.k_nearest_neighbors(*queryTrack, k);
+            cout << "\nUsing KD Tree\n";
+        } else {
+            results = vpTree.k_nearest_neighbors(*queryTrack, k);
+            cout << "\nUsing VP Tree\n";
+        }
+
+        cout << "Similar songs to \"" << queryTrack->track_name << "\":\n";
+        printResults(results);
+    }
+
+    cout << "Goodbye.\n";
+    return 0;
+}
