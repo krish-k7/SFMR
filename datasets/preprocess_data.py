@@ -39,7 +39,7 @@ for row in rows:
     track_id = row['track_id'].strip()
     name_artist = (
         row['track_name'].strip().lower(),
-        row['artists'].strip().lower()
+        row['artist_name'].strip().lower()
     )
 
     if track_id != '' and track_id in seen_track_ids:
