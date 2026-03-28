@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -54,6 +55,8 @@ void printResults(const vector<pair<double, Track>>& results) {
 }
 
 int main() {
+    using clock = chrono::steady_clock;
+
     vector<Track> tracks;
     string csvPath;
 
@@ -72,19 +75,23 @@ int main() {
     cout << "Enter CSV file path: ";
     getline(cin, csvPath);
 
+    auto loadStart = clock::now();
     try {
         CSVLoader::loadTracks(csvPath, tracks);
     } catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
         return 1;
     }
+    auto loadEnd = clock::now();
 
     if (tracks.empty()) {
         cout << "No tracks loaded.\n";
         return 1;
     }
 
-    cout << "Loaded " << tracks.size() << " tracks.\n";
+    cout << "Loaded " << tracks.size() << " tracks ("
+         << chrono::duration<double>(loadEnd - loadStart).count()
+         << " seconds).\n";
 
     cout << "\nChoose data structure:\n";
     cout << "1. KD Tree\n";
@@ -103,11 +110,19 @@ int main() {
     VPTree* vpTree = nullptr;
 
     if (choice == "1") {
+        auto buildStart = clock::now();
         kdTree = new KDTree(tracks);
-        cout << "Built KD Tree with " << tracks.size() << " tracks.\n\n";
+        auto buildEnd = clock::now();
+        cout << "Built KD Tree with " << tracks.size() << " tracks ("
+             << chrono::duration<double>(buildEnd - buildStart).count()
+             << " seconds).\n\n";
     } else {
+        auto buildStart = clock::now();
         vpTree = new VPTree(tracks);
-        cout << "Built VP Tree with " << tracks.size() << " tracks.\n\n";
+        auto buildEnd = clock::now();
+        cout << "Built VP Tree with " << tracks.size() << " tracks ("
+             << chrono::duration<double>(buildEnd - buildStart).count()
+             << " seconds).\n\n";
     }
 
     cout << "Number of recommendations: ";
@@ -142,14 +157,18 @@ int main() {
         }
 
         vector<pair<double, Track>> results;
+        auto searchStart = clock::now();
 
         if (choice == "1") {
             results = kdTree->k_nearest_neighbors(*queryTrack, k);
         } else {
             results = vpTree->k_nearest_neighbors(*queryTrack, k);
         }
+        auto searchEnd = clock::now();
 
-        cout << "Similar songs to \"" << queryTrack->track_name << "\":\n";
+        cout << "Similar songs to \"" << queryTrack->track_name << "\" ("
+             << chrono::duration<double>(searchEnd - searchStart).count()
+             << " seconds):\n";
         printResults(results);
     }
 
