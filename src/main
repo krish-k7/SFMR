@@ -36,7 +36,8 @@ void printResults(const vector<pair<double, Track>>& results) {
         return;
     }
 
-    //print in reverse to show nearest first
+    // Your tree code returns results from farthest-to-nearest among the top k,
+    // so print in reverse to show nearest first.
     for (int i = static_cast<int>(results.size()) - 1, rank = 1; i >= 0; --i, ++rank) {
         cout << rank << ". " << results[i].second.track_name
              << " - " << results[i].second.artists
