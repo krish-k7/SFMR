@@ -130,22 +130,10 @@ void CSVLoader::loadTracks(const string& filePath, vector<Track>& destination) {
         t.track_id = getField(row, "track_id");
         t.track_name = getField(row, "track_name");
         t.artists = getField(row, "artist_name");
-        t.album_name = getField(row, "album_name");
         t.track_genre = getField(row, "genre");
 
         t.popularity = toIntSafe(getField(row, "popularity"));
         t.duration_ms = toIntSafe(getField(row, "duration_ms"));
-        t.explicit_flag = toBoolSafe(getField(row, "explicit"));
-
-        // t.danceability = toDoubleSafe(getField(row, "danceability"));
-        // t.energy = toDoubleSafe(getField(row, "energy"));
-        // t.loudness = toDoubleSafe(getField(row, "loudness"));
-        // t.speechiness = toDoubleSafe(getField(row, "speechiness"));
-        // t.acousticness = toDoubleSafe(getField(row, "acousticness"));
-        // t.instrumentalness = toDoubleSafe(getField(row, "instrumentalness"));
-        // t.liveness = toDoubleSafe(getField(row, "liveness"));
-        // t.valence = toDoubleSafe(getField(row, "valence"));
-        // t.tempo = toDoubleSafe(getField(row, "tempo"));
 
         t.audio_features.push_back(toDoubleSafe(getField(row, "danceability")));
         t.audio_features.push_back(toDoubleSafe(getField(row, "energy")));
