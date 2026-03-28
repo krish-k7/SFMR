@@ -18,11 +18,21 @@ string toLower(string s) {
     return s;
 }
 
-Track* findTrackByName(vector<Track>& tracks, const string& name) {
-    string target = toLower(name);
+Track* findTrack(vector<Track>& tracks, const string& input) {
+    size_t dash = input.find(" - ");
+    if (dash == string::npos) {
+        return nullptr;
+    }
+
+    string title = toLower(input.substr(0, dash));
+    string artist = toLower(input.substr(dash + 3));
+
+    if (title.empty() || artist.empty()) {
+        return nullptr;
+    }
 
     for (auto& track : tracks) {
-        if (toLower(track.track_name) == target) {
+        if (toLower(track.track_name) == title && toLower(track.artists) == artist) {
             return &track;
         }
     }
@@ -106,20 +116,25 @@ int main() {
     int k = stoi(kInput);
 
     while (true) {
-        string songTitle;
-        cout << "\nEnter song title (or q to quit): ";
-        getline(cin, songTitle);
+        string songInput;
+        cout << "\nEnter song as Title - Artist (or q to quit): ";
+        getline(cin, songInput);
 
-        if (songTitle == "q" || songTitle == "Q") {
+        if (songInput == "q" || songInput == "Q") {
             break;
         }
 
-        if (songTitle.empty()) {
-            cout << "Please enter a song title.\n";
+        if (songInput.empty()) {
+            cout << "Please enter a song title and artist.\n";
             continue;
         }
 
-        Track* queryTrack = findTrackByName(tracks, songTitle);
+        if (songInput.find(" - ") == string::npos) {
+            cout << "Please use the format: Title - Artist\n";
+            continue;
+        }
+
+        Track* queryTrack = findTrack(tracks, songInput);
 
         if (queryTrack == nullptr) {
             cout << "Song not found.\n";
