@@ -84,13 +84,26 @@ int main() {
     string choice;
     getline(cin, choice);
 
-    cout << "How many similar songs do you want? ";
+    if (choice != "1" && choice != "2") {
+        cout << "Invalid choice.\n";
+        return 1;
+    }
+
+    KDTree* kdTree = nullptr;
+    VPTree* vpTree = nullptr;
+
+    if (choice == "1") {
+        kdTree = new KDTree(tracks);
+        cout << "Built KD Tree with " << tracks.size() << " tracks.\n\n";
+    } else {
+        vpTree = new VPTree(tracks);
+        cout << "Built VP Tree with " << tracks.size() << " tracks.\n\n";
+    }
+
+    cout << "Number of recommendations: ";
     string kInput;
     getline(cin, kInput);
     int k = stoi(kInput);
-
-    KDTree kdTree(tracks);
-    VPTree vpTree(tracks);
 
     while (true) {
         string songTitle;
@@ -116,11 +129,9 @@ int main() {
         vector<pair<double, Track>> results;
 
         if (choice == "1") {
-            results = kdTree.k_nearest_neighbors(*queryTrack, k);
-            cout << "\nUsing KD Tree\n";
+            results = kdTree->k_nearest_neighbors(*queryTrack, k);
         } else {
-            results = vpTree.k_nearest_neighbors(*queryTrack, k);
-            cout << "\nUsing VP Tree\n";
+            results = vpTree->k_nearest_neighbors(*queryTrack, k);
         }
 
         cout << "Similar songs to \"" << queryTrack->track_name << "\":\n";
@@ -128,5 +139,6 @@ int main() {
     }
 
     cout << "Goodbye.\n";
+
     return 0;
 }
