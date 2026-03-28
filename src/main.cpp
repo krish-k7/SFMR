@@ -36,8 +36,6 @@ void printResults(const vector<pair<double, Track>>& results) {
         return;
     }
 
-    // Your tree code returns results from farthest-to-nearest among the top k,
-    // so print in reverse to show nearest first.
     for (int i = static_cast<int>(results.size()) - 1, rank = 1; i >= 0; --i, ++rank) {
         cout << rank << ". " << results[i].second.track_name
              << " - " << results[i].second.artists
@@ -49,7 +47,18 @@ int main() {
     vector<Track> tracks;
     string csvPath;
 
-    cout << "SFMR Song Recommender\n";
+    // cout << "SFMR: Simple & Fast Music Recommendations\n";
+    cout << R"( ________  ________ _____ ______   ________
+|\   ____\|\  _____\\   _ \  _   \|\   __  \
+\ \  \___|\ \  \__/\ \  \\\__\ \  \ \  \|\  \
+ \ \_____  \ \   __\\ \  \\|__| \  \ \   _  _\
+  \|____|\  \ \  \_| \ \  \    \ \  \ \  \\  \|
+    ____\_\  \ \__\   \ \__\    \ \__\ \__\\ _\
+   |\_________\|__|    \|__|     \|__|\|__|\|__|
+   \|_________|
+    )" << "\n";
+    cout << "\n\n";
+
     cout << "Enter CSV file path: ";
     getline(cin, csvPath);
 
